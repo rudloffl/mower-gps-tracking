@@ -30,7 +30,6 @@ class Gpslogger():
     def __init__(self, gpspath='/dev/ttyUSB0', savingpath='/home/pi'):
         #gpspath = '/dev/cu.usbserial' #dirty fix to run on coding computer
         #savingpath = '' #another dirty trick...
-        threading.Thread.__init__(self)
         self.gpspath = gpspath
         self.savingpath = savingpath
         self.recording = False

@@ -55,10 +55,10 @@ class Buttonplus():
         while self.__loop:
             time.sleep(.1)
             if self.button.is_pressed and self.pressed == False:
-                print(f"Button (GPIO {self.pinnumber}) is pressed")
+                print("Button (GPIO {}) is pressed".format(self.pinnumber))
                 self.pressed = True
             elif self.pressed == True and not self.button.is_pressed:
-                print(f"Button (GPIO {self.pinnumber}) is released")
+                print("Button (GPIO {}) is released".format(self.pinnumber))
                 self.pressed = False
 
 
