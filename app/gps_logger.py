@@ -41,6 +41,7 @@ def ledsuccessftp():
 
 
 if __name__ == '__main__':
+    localstoring = '/home/pi'
     green = LEDplus(18)
     orange = LEDplus(17)
     red = LEDplus(27)
@@ -48,9 +49,9 @@ if __name__ == '__main__':
     button1 = Buttonplus(22)
     button2 = Buttonplus(23)
 
-    gpslogger = Gpslogger()
+    gpslogger = Gpslogger(savingpath=localstoring)
 
-    ftpsav = Networkmng()
+    ftpsav = Networkmng(localpath=localstoring)
 
     ledstandby()
 
