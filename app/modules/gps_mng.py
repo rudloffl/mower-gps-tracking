@@ -11,7 +11,7 @@ import serial
 import os
 import time
 import threading
-
+import csv
 
 def degrees_to_decimal(data, hemisphere):
     try:
@@ -28,8 +28,8 @@ def degrees_to_decimal(data, hemisphere):
 
 class Gpslogger():
     def __init__(self, gpspath='/dev/ttyUSB0', savingpath='/home/pi'):
-        #gpspath = '/dev/cu.usbserial' #dirty fix to run on coding computer
-        #savingpath = '' #another dirty trick...
+        gpspath = '/dev/cu.usbserial' #dirty fix to run on coding computer
+        savingpath = '' #another dirty trick...
         self.gpspath = gpspath
         self.savingpath = savingpath
         self.recording = False
@@ -92,23 +92,39 @@ class Gpslogger():
         self.openserial()
         print('Tracking starts')
         firstFixFlag = False
+        counter = 0
         while self.recording:
-            time.sleep(.1)
+            time.sleep(1)
             gpsdata = self.get_coordinate()
             if gpsdata['validity'] == "A": # If the sentence shows that there's a fix, then we can log the line
                 if firstFixFlag == False: # If we haven't found a fix before, then set the filename prefix with GPS date & time.
                     firstFixDate = gpsdata['fix_date'] + "-" + gpsdata['fix_time']
                     firstFixFlag = True
                     print('first fix done')
+                    with open(os.path.join(self.savingpath,firstFixDate+"-simple-log.csv"), 'w', newline='') as csvfile:
+                        fieldnames = ['id', 'timestamp', 'decimal_latitude', 'decimal_longitude', 'speed']
+                        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                        writer.writeheader()
                 else: # write the data to a simple log file and then the raw data as well:
-                    print('recording file {}'.format(firstFixDate))
-                    with open(os.path.join(self.savingpath,firstFixDate+"-simple-log.txt"), "a") as myfile:
-                        myfile.write(gpsdata['fix_date'] + "-" +
-                                     gpsdata['fix_time'] + "," +
-                                     str(gpsdata['decimal_latitude']) + "," +
-                                     str(gpsdata['decimal_longitude']) + "," +
-                                     str(gpsdata['speed']) + ","
-                                     "\n")
+                    #print('recording file {}'.format(firstFixDate))
+                    #with open(os.path.join(self.savingpath,firstFixDate+"-simple-log.txt"), "a") as myfile:
+                    #    myfile.write(str(counter) + "," +
+                    #                 gpsdata['fix_date'] + "-" +
+                    #                 gpsdata['fix_time'] + "," +
+                    #                 str(gpsdata['decimal_latitude']) + "," +
+                    #                 str(gpsdata['decimal_longitude']) + "," +
+                    #                 str(gpsdata['speed']) + ","
+                    #                 "\n")
+                    torecord = {'id':counter,
+                                'timestamp':'{}-{}'.format(gpsdata['fix_date'], gpsdata['fix_time']),
+                                'decimal_latitude':str(gpsdata['decimal_latitude']),
+                                'decimal_longitude':str(gpsdata['decimal_longitude']),
+                                'speed':str(gpsdata['speed'])
+                                }
+                    with open(os.path.join(self.savingpath,firstFixDate+"-simple-log.csv"), 'a', newline='') as csvfile:
+                        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                        writer.writerow(torecord)
+                    counter += 1
 
         self.closeserial()
 
@@ -119,4 +135,10 @@ if __name__ == '__main__':
     print('recording start')
     time.sleep(10)
     gpslogger.stop_tracking()
+    print('recording stopped')
+    time.sleep(2)
+    gpslogger.tracking()
+    print('recording start')
+    time.sleep(10)
     print('recording end')
+    gpslogger.stop_tracking()
