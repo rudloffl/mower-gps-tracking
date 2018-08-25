@@ -15,7 +15,7 @@ class LEDplus():
     def __init__(self,pinnumber):
         self.led = LED(pinnumber)
         self.__loop = True
-        self.__threading = threading.Thread(target=self.__blink, args=(.5, ))
+
 
     def on(self,):
         self.__loop = False
@@ -33,6 +33,7 @@ class LEDplus():
 
     def blink(self):
         self.__loop = True
+        self.__threading = threading.Thread(target=self.__blink, args=(.5, ))
         self.__threading.start()
 
     def __blink(self, pitch=.5):
