@@ -54,6 +54,3 @@ class Networkmng():
 if __name__ == '__main__':
     networkmng = Networkmng()
     networkmng.uploadall()
-
-
-/usr/bin/python3 /home/pi/mower-gps-tracking/app/gps_logger.py

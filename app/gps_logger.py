@@ -59,27 +59,25 @@ if __name__ == '__main__':
         time.sleep(.1)
 
         if button1.pressed:
+            waitrelease(button1)
             if gpslogger.recording == False:
-                waitrelease(button1)
                 gpslogger.tracking()
                 ledrecording()
 
             elif gpslogger.recording == True:
                 gpslogger.stop_tracking()
-                waitrelease(button1)
                 ledstandby()
 
 
         if button2.pressed:
+            waitrelease(button2)
             if gpslogger.recording == True:
                 red.blink()
-                waitrelease(button2)
                 red.off()
             elif gpslogger.recording == False:
                 red.blink()
                 orange.off()
                 green.off()
-                waitrelease(button2)
                 ftpresponse = ftpsav.uploadall() #True if error
 
                 if ftpresponse: #There was an issue during for the FTP transfer
