@@ -14,8 +14,9 @@ from gpiozero import LED, Button
 class LEDplus():
     def __init__(self,pinnumber):
         self.led = LED(pinnumber)
-        self.__loop = True
-
+        self.led.off()
+        self.__loop = False
+        self.__threading = threading.Thread(target=self.__blink, args=(.5, ))
 
     def on(self,):
         self.__loop = False
@@ -27,8 +28,8 @@ class LEDplus():
         self.maybejoin()
         self.led.off()
 
-    def maybejoin(self,):
-        if self.__threading.isAlive():
+    def maybejoin(self):
+        if self.__threading.is_alive():
             self.__threading.join()
 
     def blink(self):
@@ -38,9 +39,10 @@ class LEDplus():
 
     def __blink(self, pitch=.5):
         while self.__loop:
-            self.led.toggle()
+            self.led.on()
             time.sleep(pitch/2)
-        self.led.off()
+            self.led.off()
+            time.sleep(pitch/2)
 
 class Buttonplus():
     def __init__(self, pinnumber):
@@ -61,14 +63,7 @@ class Buttonplus():
                 print("Button (GPIO {}) is released".format(self.pinnumber))
                 self.pressed = False
 
-
-if __name__ == '__main__':
-    green = LEDplus(18)
-    orange = LEDplus(17)
-    red = LEDplus(27)
-    button1 = Buttonplus(22)
-    button2 = Buttonplus(23)
-
+def test1():
     while True:
         time.sleep(.1)
         if button1.pressed == True:
@@ -78,18 +73,29 @@ if __name__ == '__main__':
 
             time.sleep(1)
 
-            green.blink(.1)
-            orange.blink(.5)
-            red.blink(.33)
+            green.blink()
+            orange.blink()
+            red.blink()
 
-            time.sleep(2)
+            time.sleep(3)
 
             green.on()
             orange.on()
             red.on()
 
-            time.sleep(2)
+            time.sleep(5)
 
             green.off()
             orange.off()
             red.off()
+
+
+if __name__ == '__main__':
+    green = LEDplus(18)
+    orange = LEDplus(17)
+    red = LEDplus(27)
+    button1 = Buttonplus(22)
+    button2 = Buttonplus(23)
+    print('#############\n### READY ###\n#############')
+
+    test1()

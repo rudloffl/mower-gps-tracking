@@ -28,8 +28,8 @@ def degrees_to_decimal(data, hemisphere):
 
 class Gpslogger():
     def __init__(self, gpspath='/dev/ttyUSB0', savingpath='/home/pi'):
-        gpspath = '/dev/cu.usbserial' #dirty fix to run on coding computer
-        savingpath = '' #another dirty trick...
+        #gpspath = '/dev/cu.usbserial' #dirty fix to run on coding computer
+        #savingpath = '' #another dirty trick...
         self.gpspath = gpspath
         self.savingpath = savingpath
         self.recording = False
@@ -56,6 +56,8 @@ class Gpslogger():
 
         #print('entry caught --> {}'.format(gpsentry))
         gpsdata = self.parse_GPRMC(gpsentry)
+        self.ser.reset_output_buffer()
+        self.ser.reset_input_buffer()
         return gpsdata
 
     def parse_GPRMC(self, data):
@@ -121,6 +123,7 @@ class Gpslogger():
                                 'decimal_longitude':str(gpsdata['decimal_longitude']),
                                 'speed':str(gpsdata['speed'])
                                 }
+                    print('writing entry {} at {}'.format(counter, torecord['timestamp']))
                     with open(os.path.join(self.savingpath,firstFixDate+"-simple-log.csv"), 'a', newline='') as csvfile:
                         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                         writer.writerow(torecord)
